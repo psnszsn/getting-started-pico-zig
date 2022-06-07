@@ -1,6 +1,8 @@
 const std = @import("std");
 const builtin = @import("builtin");
 const uf2 = @import("uf2/src/main.zig");
+const rp2040 = @import("rp2040/build.zig");
+const microzig = @import("microzig/src/main.zig");
 
 const Builder = std.build.Builder;
 const Step = std.build.Step;
@@ -13,13 +15,20 @@ fn root() []const u8 {
 }
 
 pub fn build(b: *Builder) !void {
+    const mode = b.standardReleaseOptions();
     const mounted_dir_opt = b.option([]const u8, "path", "override where the pi pico is mounted");
     const flash_step = b.step("flash", "Flash the pi pico");
+    const blinky = rp2040.addPiPicoExecutable(
+        microzig,
+        b,
+        "blinky",
+        "examples/blinky.zig",
+        .{},
+    );
+    blinky.setBuildMode(mode);
+    blinky.install();
 
     if (mounted_dir_opt) |mounted_dir| {
-        // TODO: build function from microzig?
-        const blinky = b.addExecutable("blinky", "examples/blinky.zig");
-
         const uf2_step = uf2.Uf2Step.create(blinky, .{
             .family_id = .RP2040,
         });
