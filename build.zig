@@ -16,8 +16,6 @@ fn root() []const u8 {
 
 pub fn build(b: *Builder) !void {
     const mode = b.standardReleaseOptions();
-    const mounted_dir_opt = b.option([]const u8, "path", "override where the pi pico is mounted");
-    const flash_step = b.step("flash", "Flash the pi pico");
     const blinky = rp2040.addPiPicoExecutable(
         microzig,
         b,
@@ -28,36 +26,13 @@ pub fn build(b: *Builder) !void {
     blinky.setBuildMode(mode);
     blinky.install();
 
-    if (mounted_dir_opt) |mounted_dir| {
-        const uf2_step = uf2.Uf2Step.create(blinky, .{
-            .family_id = .RP2040,
-        });
-
-        const uf2_flash_op = uf2_step.addFlashOperation(mounted_dir);
-        flash_step.dependOn(&uf2_flash_op.step);
-    } else {
-        switch (builtin.os.tag) {
-            .linux => {
-                const device_info = DeviceInfoStep.create(b);
-                flash_step.dependOn(&device_info.step);
-
-                // TODO: add ability for uf2 to mount the device. For systems
-                // permissions look into polkit and PAM, or even do some
-                // analysis on the user and if they're able to mount drives.
-                // It's important if we do all this work for them, then it
-                // won't be more painful than getting them to manually mount a
-                // drive
-
-            },
-            else => {
-                // TODO: device discovery for windows, macos, fuck it why not even BSD?
-                std.log.err("you must provide a path to the pi pico's directory", .{});
-                return error.NoDir;
-            },
-        }
-    }
+    const uf2_step = uf2.Uf2Step.create(blinky, .{
+        .family_id = .RP2040,
+    });
+    uf2_step.install();
 }
 
+// TODO: wip
 pub const DeviceInfoStep = struct {
     step: Step,
     builder: *Builder,
