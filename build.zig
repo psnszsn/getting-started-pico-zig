@@ -14,13 +14,13 @@ fn root() []const u8 {
     return (std.fs.path.dirname(@src().file) orelse ".") ++ "/";
 }
 
-pub fn build(b: *Builder) !void {
+pub fn addExample(b: *Builder, comptime name: []const u8) !void {
     const mode = b.standardReleaseOptions();
     const blinky = rp2040.addPiPicoExecutable(
         microzig,
         b,
-        "blinky",
-        "examples/blinky.zig",
+        name,
+        "examples/" ++ name ++ ".zig",
         .{},
     );
     blinky.setBuildMode(mode);
@@ -30,6 +30,11 @@ pub fn build(b: *Builder) !void {
         .family_id = .RP2040,
     });
     uf2_step.install();
+}
+
+pub fn build(b: *Builder) !void {
+    try addExample(b, "blinky");
+    try addExample(b, "blinky_core1");
 }
 
 // TODO: wip

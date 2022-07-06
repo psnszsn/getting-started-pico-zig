@@ -21,16 +21,25 @@ fn delay(val: u32) void {
         std.mem.doNotOptimizeAway(i);
 }
 
+fn core1() void {
+    while (true) {
+        gpio.put(led, 1);
+        delay(1_000_000);
+        gpio.put(led, 0);
+        delay(1_000_000);
+    }
+}
+
 pub fn main() !void {
     try rp2040.default_clock_config.apply();
 
     gpio.reset();
     gpio.init(led);
     gpio.setDir(led, .out);
+
+    multicore.launchCore1(core1);
+
     while (true) {
-        gpio.put(led, 1);
-        delay(1_000_000);
-        gpio.put(led, 0);
-        delay(1_000_000);
+        microzig.cpu.wfi();
     }
 }
