@@ -26,8 +26,6 @@ fn core1() void {
 }
 
 pub fn main() !void {
-    try rp2040.default_clock_config.apply();
-
     gpio.reset();
     gpio.init(led);
     gpio.setDir(led, .out);

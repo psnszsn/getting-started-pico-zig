@@ -17,8 +17,6 @@ pub fn panic(message: []const u8, maybe_stack_trace: ?*std.builtin.StackTrace) n
 const led = 25;
 
 pub fn main() !void {
-    try rp2040.default_clock_config.apply();
-
     gpio.reset();
     gpio.init(led);
     gpio.setDir(led, .out);
