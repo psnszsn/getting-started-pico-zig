@@ -23,10 +23,10 @@ pub fn addExample(b: *Builder, comptime name: []const u8) !void {
         "examples/" ++ name ++ ".zig",
         .{},
     );
-    blinky.setBuildMode(mode);
-    blinky.install();
+    blinky.inner.setBuildMode(mode);
+    blinky.inner.install();
 
-    const uf2_step = uf2.Uf2Step.create(blinky, .{
+    const uf2_step = uf2.Uf2Step.create(blinky.inner, .{
         .family_id = .RP2040,
     });
     uf2_step.install();
@@ -37,6 +37,8 @@ pub fn build(b: *Builder) !void {
     try addExample(b, "blinky_core1");
     try addExample(b, "uart");
     try addExample(b, "gpio_clk");
+    // TODO: get this working
+    //try addExample(b, "pwm");
 }
 
 // TODO: wip

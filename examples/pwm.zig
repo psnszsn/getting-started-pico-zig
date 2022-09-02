@@ -15,17 +15,16 @@ pub fn panic(message: []const u8, maybe_stack_trace: ?*std.builtin.StackTrace) n
 }
 
 const pin_config = rp2040.pins.GlobalConfiguration{
-    .GPIO25 = .{
-        .name = "led",
-        .direction = .out,
-    },
+    .GPIO25 = .{ .name = "led", .function = .PWM4_B },
 };
 
 pub fn main() !void {
     const pins = pin_config.apply();
+    pins.led.slice().setWrap(100);
+    pins.led.setLevel(10);
+    pins.led.slice().enable();
 
     while (true) {
-        pins.led.toggle();
         time.sleepMs(250);
     }
 }
