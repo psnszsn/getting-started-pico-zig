@@ -1,0 +1,19 @@
+= Getting started with Zig on the Raspberry Pi Pico
+
+This repository is a light wrapper around the examples in the https://github.com/ZigEmbeddedGroup/rp2040[RP2040 HAL]. The purpose for doing this is to demonstrate how additional post-build steps can be modularized for reuse.
+
+The RP2040 HAL exports a build function `addPiPicoExecutable()` which sets up everything you need to compile your software to an ELF file.
+
+****
+NOTE: This function has pi pico in the name instead of RP2040 because it has the board configured.
+****
+
+From here there's a multitude of options to get your program running on your hardware:
+
+* using the built-in USB MSC bootloader
+* using a debugger to flash using SWD
+* a custom bootloader where you could upload the new program from even a UART!
+
+This repo just demonstrates the first option. This is the simplest and fastest way to program your Raspberry Pi Pico. First you press and hold the BOOT button on your board as you plug the USB into your computer. This will create a drive (Linux users you gotta mount that yourself btw), and you drop in a https://github.com/microsoft/uf2[UF2] file that contains your program.
+
+A UF2 file is just a special file format that the bootloader accepts. This repo takes the uf2 package and adds it as a build step to every executable. You'll find an ELF and corresponding UF2 file for each example.
