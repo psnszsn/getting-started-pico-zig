@@ -8,8 +8,8 @@ const uf2 = @import("uf2/src/main.zig");
 const rp2040 = @import("rp2040/build.zig");
 
 pub fn build(b: *Builder) !void {
-    const mode = b.standardReleaseOptions();
-    var examples = rp2040.Examples.init(b, mode);
+    const optimize = b.standardOptimizeOption(.{});
+    var examples = rp2040.Examples.init(b, optimize);
 
     // inject uf2 file creation
     inline for (@typeInfo(rp2040.Examples).Struct.fields) |field| {
